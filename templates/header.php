@@ -13,6 +13,7 @@ function getPageTitle($page) {
         case 'entry.php': return 'Entry';
         case 'logbook_list.php': return 'Logbook List';
         case 'settings.php': return 'Settings';
+        case 'reporting.php': return 'Reporting';
         case 'index.php':
         default:
             return 'Dashboard';
@@ -64,7 +65,7 @@ function getPageTitle($page) {
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="w-full text-left px-3 py-2 text-white text-sm rounded-lg transition duration-200 flex items-center gap-2 hover:bg-blue-600">
+                    <a href="reporting.php" class="w-full text-left px-3 py-2 text-white text-sm rounded-lg transition duration-200 flex items-center gap-2 <?php echo ($current_page == 'reporting.php') ? 'bg-blue-700' : 'hover:bg-blue-600'; ?>">
                         <i class="fas fa-chart-bar fa-fw"></i><span>Reporting</span>
                     </a>
                 </li>

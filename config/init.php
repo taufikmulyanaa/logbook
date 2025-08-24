@@ -82,6 +82,13 @@ function esc_html(?string $string): string {
 function log_activity(string $message): void {
     $timestamp = date('Y-m-d H:i:s');
     $log_entry = "[{$timestamp}] - {$message}" . PHP_EOL;
+    
+    // Buat folder logs jika belum ada
+    $log_dir = __DIR__ . '/../logs';
+    if (!is_dir($log_dir)) {
+        mkdir($log_dir, 0755, true);
+    }
+    
     file_put_contents(__DIR__ . '/../logs/app.log', $log_entry, FILE_APPEND);
 }
 

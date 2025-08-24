@@ -32,91 +32,321 @@ $parameter_columns = [
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
 <style>
-    /* Kustomisasi tampilan DataTables agar sesuai dengan tema */
-    .dataTables_wrapper .dataTables_length select,
-    .dataTables_wrapper .dataTables_filter input {
-        background-color: hsl(210, 40%, 96.1%); border-color: hsl(214.3, 31.8%, 91.4%); border-radius: 0.5rem; padding: 0.5rem;
+    /* Custom DataTables styling to match theme */
+    .dataTables_wrapper {
+        font-family: 'Inter', sans-serif;
     }
-    .dataTables_wrapper .dataTables_paginate .paginate_button { border-radius: 0.5rem; }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: hsl(221.2, 83.2%, 53.3%) !important; color: white !important; border-color: hsl(221.2, 83.2%, 53.3%) !important; }
-    #logbookTable th { white-space: nowrap; }
-    .dt-button { background-color: #4f46e5 !important; color: white !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; }
-    .dt-button:hover { background-color: #4338ca !important; }
+    
+    /* Hide default DataTables search, info, and length controls */
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_length {
+        display: none !important;
+    }
+    
+    /* Pagination styling */
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 1.5rem !important; /* Add space between table and pagination */
+        float: none !important;
+        text-align: center !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 0.375rem !important; /* Smaller border radius */
+        padding: 0.25rem 0.5rem !important; /* Smaller padding */
+        margin: 0 0.0625rem !important; /* Smaller margin */
+        border: 1px solid hsl(214.3, 31.8%, 91.4%) !important;
+        color: hsl(222.2, 84%, 4.9%) !important;
+        font-size: 0.75rem !important; /* Smaller font size */
+        line-height: 1 !important;
+        min-width: auto !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: hsl(210, 40%, 96.1%) !important;
+        border-color: hsl(214.3, 31.8%, 91.4%) !important;
+        color: hsl(222.2, 84%, 4.9%) !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: hsl(221.2, 83.2%, 53.3%) !important;
+        border-color: hsl(221.2, 83.2%, 53.3%) !important;
+        color: white !important;
+        font-weight: 500 !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: hsl(221.2, 83.2%, 53.3%) !important;
+        border-color: hsl(221.2, 83.2%, 53.3%) !important;
+        color: white !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+        color: hsl(215.4, 16.3%, 46.9%) !important;
+        cursor: not-allowed !important;
+        opacity: 0.5 !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        background: transparent !important;
+        border-color: hsl(214.3, 31.8%, 91.4%) !important;
+    }
+    
+    #logbookTable thead th {
+        background-color: hsl(210, 40%, 96.1%) !important;
+        color: hsl(215.4, 16.3%, 46.9%) !important;
+        font-weight: 500 !important;
+        font-size: 0.75rem !important; /* text-xs */
+        white-space: nowrap;
+        border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%) !important;
+    }
+    
+    #logbookTable tbody tr {
+        border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%) !important;
+        font-size: 0.75rem !important; /* text-xs */
+    }
+    
+    #logbookTable tbody tr:hover {
+        background-color: hsl(210, 40%, 96.1%) !important;
+    }
+    
+    #logbookTable tbody td {
+        color: hsl(222.2, 84%, 4.9%) !important;
+        font-size: 0.75rem !important; /* text-xs */
+    }
+    
+
+    
+    .dataTables_wrapper .dataTables_processing {
+        background: white !important;
+        color: hsl(222.2, 84%, 4.9%) !important;
+        border: 1px solid hsl(214.3, 31.8%, 91.4%) !important;
+        border-radius: 0.5rem !important;
+    }
+    
+    /* Hide default DataTables buttons container */
+    .dt-buttons {
+        display: none !important;
+    }
+    
+    /* Hide individual export buttons but keep them functional */
+    .hidden-export-btn {
+        display: none !important;
+    }
+    
+    /* Custom export dropdown styling */
+    #exportDropdown {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        animation: fadeIn 0.15s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    #exportDropdown button:hover i {
+        transform: scale(1.1);
+        transition: transform 0.15s ease;
+    }
+    
+    /* Toast notification styling */
+    #exportToast {
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
 </style>
 
-<div class="bg-card p-6 rounded-xl border border-border shadow-lg space-y-6">
-    <h2 class="text-xl font-bold text-foreground border-b border-border pb-4">Logbook List</h2>
+<div class="space-y-6">
+    <div class="bg-card p-6 rounded-xl border border-border shadow-lg">
+        <div class="flex justify-between items-center border-b border-border pb-4">
+            <div>
+                <h2 class="text-xl font-bold text-foreground">Logbook List</h2>
+                <p class="text-sm text-muted-foreground mt-1">Manage and view all logbook entries</p>
+            </div>
+            <a href="entry.php" class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-600/90 transition-colors">
+                <i class="fas fa-plus w-4 h-4"></i>
+                <span>Add New Entry</span>
+            </a>
+        </div>
+    </div>
     
     <!-- Filter Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-            <label class="block text-sm font-medium text-muted-foreground mb-1">Search:</label>
-            <input type="text" id="generalSearch" placeholder="Search anything..." class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm">
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-muted-foreground mb-1">Date From:</label>
-            <input type="date" id="dateFromFilter" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm">
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-muted-foreground mb-1">Date To:</label>
-            <input type="date" id="dateToFilter" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm">
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-muted-foreground mb-1">Instrument:</label>
-            <select id="instrumentFilter" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm">
-                <option value="">All Instruments</option>
-                <?php foreach ($instruments_for_filter as $instrument): ?>
-                    <option value="<?php echo esc_html($instrument['name']); ?>"><?php echo esc_html($instrument['name']); ?></option>
-                <?php endforeach; ?>
-            </select>
+    <div class="bg-card p-6 rounded-xl border border-border shadow-lg">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+                <label for="generalSearch" class="block text-sm font-medium text-muted-foreground">Search</label>
+                <input type="text" id="generalSearch" placeholder="Search anything..." 
+                       class="mt-1 w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+            </div>
+            <div>
+                <label for="dateFromFilter" class="block text-sm font-medium text-muted-foreground">Date From</label>
+                <input type="date" id="dateFromFilter" 
+                       class="mt-1 w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+            </div>
+            <div>
+                <label for="dateToFilter" class="block text-sm font-medium text-muted-foreground">Date To</label>
+                <input type="date" id="dateToFilter" 
+                       class="mt-1 w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+            </div>
+            <div>
+                <label for="instrumentFilter" class="block text-sm font-medium text-muted-foreground">Instrument</label>
+                <select id="instrumentFilter" 
+                        class="mt-1 w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                    <option value="">All Instruments</option>
+                    <?php foreach ($instruments_for_filter as $instrument): ?>
+                        <option value="<?php echo esc_html($instrument['name']); ?>">
+                            <?php echo esc_html($instrument['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </div>
     </div>
 
-    <!-- Table Container -->
-    <div class="overflow-x-auto">
-        <table id="logbookTable" class="display table-auto w-full text-sm" style="width:100%">
-            <thead>
-                <tr>
-                    <th class="p-3">Log Code</th>
-                    <th class="p-3">Instrument</th>
-                    <th class="p-3">User</th>
-                    <th class="p-3">Sample Name</th>
-                    <th class="p-3">Trial Code</th>
-                    <th class="p-3">Start Time</th>
-                    <th class="p-3">Finish Time</th>
-                    <?php foreach (array_keys($parameter_columns) as $param_name): ?>
-                        <th class="p-3"><?php echo esc_html(preg_replace('/(?<!^)([A-Z])/', ' $1', $param_name)); ?></th>
-                    <?php endforeach; ?>
-                    <th class="p-3">Condition After</th>
-                    <th class="p-3">Activity</th>
-                    <th class="p-3">Remark</th>
-                    <th class="p-3">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($logs as $log): ?>
-                <tr>
-                    <td class="p-3 whitespace-nowrap"><?php echo esc_html($log['log_book_code']); ?></td>
-                    <td class="p-3 whitespace-nowrap"><?php echo esc_html($log['instrument_name']); ?></td>
-                    <td class="p-3 whitespace-nowrap"><?php echo esc_html($log['user_name']); ?></td>
-                    <td class="p-3 whitespace-nowrap"><?php echo esc_html($log['sample_name']); ?></td>
-                    <td class="p-3 whitespace-nowrap"><?php echo esc_html($log['trial_code']); ?></td>
-                    <td class="p-3 whitespace-nowrap"><?php echo esc_html(date('Y-m-d H:i', strtotime($log['start_date'] . ' ' . $log['start_time']))); ?></td>
-                    <td class="p-3 whitespace-nowrap"><?php echo $log['finish_date'] ? esc_html(date('Y-m-d H:i', strtotime($log['finish_date'] . ' ' . $log['finish_time']))) : 'N/A'; ?></td>
-                    <?php foreach ($parameter_columns as $db_col): ?>
-                        <td class="p-3 whitespace-nowrap"><?php echo esc_html($log[$db_col]); ?></td>
-                    <?php endforeach; ?>
-                    <td class="p-3 whitespace-nowrap"><?php echo esc_html($log['condition_after']); ?></td>
-                    <td class="p-3"><?php echo esc_html($log['activity']); ?></td>
-                    <td class="p-3"><?php echo esc_html($log['remark']); ?></td>
-                    <td class="p-3 whitespace-nowrap">
-                        <a href="#" class="text-primary hover:underline mr-2">Edit</a>
-                        <a href="#" class="text-red-600 hover:underline">Delete</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <!-- Export Section -->
+    <div class="bg-card p-6 rounded-xl border border-border shadow-lg">
+        <div class="flex justify-between items-center mb-6">
+            <div class="text-sm text-muted-foreground">
+                <span id="table-info">Loading entries...</span>
+            </div>
+            <div class="relative">
+                <button id="exportDropdownBtn" class="px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg flex items-center gap-2 hover:bg-green-600/90 transition-colors">
+                    <i class="fas fa-download w-4 h-4"></i>
+                    <span>Export</span>
+                    <i class="fas fa-chevron-down w-3 h-3 ml-1"></i>
+                </button>
+                
+                <div id="exportDropdown" class="absolute right-0 top-full mt-2 w-48 bg-card rounded-lg shadow-lg border border-border py-2 hidden z-50">
+                    <button id="copyBtn" class="w-full text-left flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                        <i class="fas fa-copy w-4 h-4 mr-3 text-blue-500"></i>
+                        Copy to Clipboard
+                    </button>
+                    <button id="csvBtn" class="w-full text-left flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                        <i class="fas fa-file-csv w-4 h-4 mr-3 text-green-500"></i>
+                        Export as CSV
+                    </button>
+                    <button id="excelBtn" class="w-full text-left flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                        <i class="fas fa-file-excel w-4 h-4 mr-3 text-green-600"></i>
+                        Export as Excel
+                    </button>
+                    <hr class="my-1 border-border">
+                    <button id="printBtn" class="w-full text-left flex items-center px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+                        <i class="fas fa-print w-4 h-4 mr-3 text-gray-500"></i>
+                        Print Table
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto">
+            <table id="logbookTable" class="display table-auto w-full text-xs" style="width:100%">
+                <thead>
+                    <tr>
+                        <th class="p-2 text-left">Log Code</th>
+                        <th class="p-2 text-left">Instrument</th>
+                        <th class="p-2 text-left">User</th>
+                        <th class="p-2 text-left">Sample Name</th>
+                        <th class="p-2 text-left">Trial Code</th>
+                        <th class="p-2 text-left">Start Time</th>
+                        <th class="p-2 text-left">Finish Time</th>
+                        <?php foreach (array_keys($parameter_columns) as $param_name): ?>
+                            <th class="p-2 text-left"><?php echo esc_html(preg_replace('/(?<!^)([A-Z])/', ' $1', $param_name)); ?></th>
+                        <?php endforeach; ?>
+                        <th class="p-2 text-left">Condition After</th>
+                        <th class="p-2 text-left">Activity</th>
+                        <th class="p-2 text-left">Remark</th>
+                        <th class="p-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($logs)): ?>
+                        <tr>
+                            <td colspan="<?php echo count($parameter_columns) + 8; ?>" class="p-8 text-center text-muted-foreground">
+                                <div class="flex flex-col items-center gap-2">
+                                    <i class="fas fa-inbox text-2xl opacity-50"></i>
+                                    <p>No logbook entries found.</p>
+                                    <a href="entry.php" class="text-primary hover:underline text-sm">Create your first entry</a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($logs as $log): ?>
+                        <tr class="hover:bg-accent/50">
+                            <td class="p-2 whitespace-nowrap font-medium"><?php echo esc_html($log['log_book_code']); ?></td>
+                            <td class="p-2 whitespace-nowrap"><?php echo esc_html($log['instrument_name']); ?></td>
+                            <td class="p-2 whitespace-nowrap"><?php echo esc_html($log['user_name']); ?></td>
+                            <td class="p-2 whitespace-nowrap"><?php echo esc_html($log['sample_name']); ?></td>
+                            <td class="p-2 whitespace-nowrap"><?php echo esc_html($log['trial_code']); ?></td>
+                            <td class="p-2 whitespace-nowrap">
+                                <?php echo esc_html(date('Y-m-d H:i', strtotime($log['start_date'] . ' ' . $log['start_time']))); ?>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <?php if ($log['finish_date']): ?>
+                                    <?php echo esc_html(date('Y-m-d H:i', strtotime($log['finish_date'] . ' ' . $log['finish_time']))); ?>
+                                <?php else: ?>
+                                    <span class="text-muted-foreground italic">In Progress</span>
+                                <?php endif; ?>
+                            </td>
+                            <?php foreach ($parameter_columns as $db_col): ?>
+                                <td class="p-2 whitespace-nowrap">
+                                    <?php if (!empty($log[$db_col])): ?>
+                                        <?php echo esc_html($log[$db_col]); ?>
+                                    <?php else: ?>
+                                        <span class="text-muted-foreground">-</span>
+                                    <?php endif; ?>
+                                </td>
+                            <?php endforeach; ?>
+                            <td class="p-2 whitespace-nowrap">
+                                <?php if ($log['condition_after']): ?>
+                                    <span class="px-2 py-1 text-xs rounded-full <?php 
+                                        echo $log['condition_after'] === 'Good' ? 'bg-green-100 text-green-800' : 
+                                            ($log['condition_after'] === 'Need Maintenance' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'); 
+                                    ?>">
+                                        <?php echo esc_html($log['condition_after']); ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="text-muted-foreground">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="p-2 max-w-xs">
+                                <div class="truncate" title="<?php echo esc_html($log['activity']); ?>">
+                                    <?php echo esc_html($log['activity']); ?>
+                                </div>
+                            </td>
+                            <td class="p-2 max-w-xs">
+                                <?php if ($log['remark']): ?>
+                                    <div class="truncate" title="<?php echo esc_html($log['remark']); ?>">
+                                        <?php echo esc_html($log['remark']); ?>
+                                    </div>
+                                <?php else: ?>
+                                    <span class="text-muted-foreground">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="flex items-center gap-1">
+                                    <button class="text-primary hover:text-primary/80 transition-colors p-1" title="View Details">
+                                        <i class="fas fa-eye w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-blue-600 hover:text-blue-500 transition-colors p-1" title="Edit">
+                                        <i class="fas fa-edit w-3 h-3"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-500 transition-colors p-1" title="Delete">
+                                        <i class="fas fa-trash w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -136,7 +366,11 @@ $(document).ready(function() {
         function(settings, data, dataIndex) {
             let min = $('#dateFromFilter').val();
             let max = $('#dateToFilter').val();
-            let date = new Date(data[5].split(' ')[0]); // Get date from 'Start Time' column
+            let dateStr = data[5]; // Start Time column
+            
+            if (!dateStr || dateStr === 'In Progress') return true;
+            
+            let date = new Date(dateStr.split(' ')[0]); // Get date part only
 
             if (
                 (min === "" || min === null) && (max === "" || max === null) ||
@@ -150,16 +384,155 @@ $(document).ready(function() {
         }
     );
 
+    // Initialize DataTable
     let table = $('#logbookTable').DataTable({
-        "pageLength": 10,
-        "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-        "dom": 'Bfrtip', // Add Buttons to the DOM
+        "pageLength": 25,
+        "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+        "dom": 'Blrtip', // Remove 'f' to hide search, keep buttons for functionality but hide with CSS
         "buttons": [
-            'copy', 'csv', 'excel', 'print'
-        ]
+            {
+                extend: 'copy',
+                text: 'Copy',
+                className: 'hidden-export-btn'
+            },
+            {
+                extend: 'csv',
+                text: 'CSV',
+                className: 'hidden-export-btn'
+            },
+            {
+                extend: 'excel',
+                text: 'Excel',
+                className: 'hidden-export-btn'
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                className: 'hidden-export-btn'
+            }
+        ],
+        "order": [[ 5, "desc" ]], // Order by Start Time descending
+        "columnDefs": [
+            { 
+                "targets": -1, // Actions column
+                "orderable": false,
+                "searchable": false
+            },
+            {
+                "targets": [9, 10], // Activity and Remark columns (adjusted for text-xs)
+                "render": function(data, type, row) {
+                    if (type === 'display' && data && data.length > 40) { // Shorter for smaller text
+                        return '<div class="truncate max-w-xs" title="' + data + '">' + data.substr(0, 40) + '...</div>';
+                    }
+                    return data || '<span class="text-gray-400">-</span>';
+                }
+            }
+        ],
+        "language": {
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching records found",
+            "emptyTable": "No data available in table",
+            "paginate": {
+                "first": "First",
+                "last": "Last", 
+                "next": "Next",
+                "previous": "Previous"
+            }
+        },
+        "drawCallback": function(settings) {
+            // Update table info in our custom location
+            let api = this.api();
+            let info = api.page.info();
+            $('#table-info').text(`Showing ${info.start + 1} to ${info.end} of ${info.recordsTotal} entries`);
+        }
     });
 
-    // Event listener for custom filters
+    // Custom Export Dropdown Functionality
+    const exportDropdownBtn = document.getElementById('exportDropdownBtn');
+    const exportDropdown = document.getElementById('exportDropdown');
+    
+    // Toggle dropdown
+    exportDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        exportDropdown.classList.toggle('hidden');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!exportDropdown.contains(e.target) && !exportDropdownBtn.contains(e.target)) {
+            exportDropdown.classList.add('hidden');
+        }
+    });
+    
+    // Export button handlers
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        table.button(0).trigger(); // Trigger copy button
+        exportDropdown.classList.add('hidden');
+        showToast('Data copied to clipboard!', 'success');
+    });
+    
+    document.getElementById('csvBtn').addEventListener('click', function() {
+        table.button(1).trigger(); // Trigger CSV export
+        exportDropdown.classList.add('hidden');
+        showToast('CSV file downloaded!', 'success');
+    });
+    
+    document.getElementById('excelBtn').addEventListener('click', function() {
+        table.button(2).trigger(); // Trigger Excel export
+        exportDropdown.classList.add('hidden');
+        showToast('Excel file downloaded!', 'success');
+    });
+    
+    document.getElementById('printBtn').addEventListener('click', function() {
+        table.button(3).trigger(); // Trigger print
+        exportDropdown.classList.add('hidden');
+    });
+    
+    // Toast notification function
+    function showToast(message, type = 'success') {
+        // Remove existing toasts
+        const existingToast = document.getElementById('exportToast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+        
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.id = 'exportToast';
+        toast.className = `fixed top-20 right-6 px-6 py-3 rounded-lg shadow-lg transition-transform transform translate-x-full z-50 ${
+            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        toast.innerHTML = `
+            <div class="flex items-center gap-2">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} w-4 h-4"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Show toast
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full');
+            toast.classList.add('translate-x-0');
+        }, 100);
+        
+        // Hide toast after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('translate-x-0');
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Event listeners for custom filters
     $('#generalSearch').on('keyup', function() {
         table.search(this.value).draw();
     });
@@ -170,6 +543,15 @@ $(document).ready(function() {
 
     $('#dateFromFilter, #dateToFilter').on('change', function() {
         table.draw();
+    });
+
+    // Clear filters button
+    $(document).on('click', '.clear-filters', function() {
+        $('#generalSearch').val('');
+        $('#instrumentFilter').val('');
+        $('#dateFromFilter').val('');
+        $('#dateToFilter').val('');
+        table.search('').columns().search('').draw();
     });
 });
 </script>

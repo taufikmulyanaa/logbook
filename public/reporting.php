@@ -1,39 +1,149 @@
 <?php
+// public/advanced_reporting.php
 require_once __DIR__ . '/../config/init.php';
 require_once __DIR__ . '/../templates/header.php';
 
-// Fetch stats for reporting page
-$total_logs = $pdo->query("SELECT COUNT(*) FROM logbook_entries")->fetchColumn();
-$completed = $pdo->query("SELECT COUNT(*) FROM logbook_entries WHERE finish_date IS NOT NULL")->fetchColumn();
-$in_progress = $total_logs - $completed;
-?>
-<div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
-    <div class="bg-[#005294] p-4 font-bold text-center text-white text-xl border-b border-blue-400">
-        Reporting
-    </div>
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Stats Cards -->
-            <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                <div class="flex items-center"><div class="p-2 bg-blue-500 rounded-lg"><i class="fas fa-clipboard-list text-white text-xl"></i></div><div class="ml-4"><p class="text-sm font-medium text-blue-600">Total Logbooks</p><p class="text-2xl font-bold text-blue-900"><?php echo (int)$total_logs; ?></p></div></div>
-            </div>
-            <div class="bg-green-50 p-6 rounded-lg border border-green-200">
-                <div class="flex items-center"><div class="p-2 bg-green-500 rounded-lg"><i class="fas fa-check-circle text-white text-xl"></i></div><div class="ml-4"><p class="text-sm font-medium text-green-600">Completed</p><p class="text-2xl font-bold text-green-900"><?php echo (int)$completed; ?></p></div></div>
-            </div>
-            <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
-                <div class="flex items-center"><div class="p-2 bg-yellow-500 rounded-lg"><i class="fas fa-clock text-white text-xl"></i></div><div class="ml-4"><p class="text-sm font-medium text-yellow-600">In Progress</p><p class="text-2xl font-bold text-yellow-900"><?php echo (int)$in_progress; ?></p></div></div>
-            </div>
-        </div>
+// Advanced reporting features that could be added
+class LogbookReporting {
+    private $pdo;
+    
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+    
+    // Usage statistics by instrument
+    public function getInstrumentUsage($start_date, $end_date) {
+        $sql = "SELECT i.name, COUNT(le.id) as usage_count, 
+                       AVG(TIMESTAMPDIFF(HOUR, 
+                           CONCAT(le.start_date, ' ', le.start_time),
+                           CONCAT(le.finish_date, ' ', le.finish_time)
+                       )) as avg_duration_hours
+                FROM instruments i 
+                LEFT JOIN logbook_entries le ON i.id = le.instrument_id 
+                WHERE le.start_date BETWEEN :start_date AND :end_date
+                GROUP BY i.id, i.name
+                ORDER BY usage_count DESC";
         
-        <!-- Report Generation -->
-        <div class="p-6 border border-gray-200 rounded-lg">
-            <h3 class="text-lg font-semibold mb-4">Generate Report</h3>
-            <div class="space-y-4">
-                <div><label class="block text-sm font-medium text-gray-600 mb-1">Report Type:</label><select class="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"><option>Daily Report</option><option>Weekly Report</option><option>Monthly Report</option></select></div>
-                <div><label class="block text-sm font-medium text-gray-600 mb-1">Date Range:</label><div class="grid grid-cols-2 gap-2"><input type="date" class="p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"><input type="date" class="p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"></div></div>
-                <button class="w-full bg-[#005294] hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"><i class="fas fa-download mr-2"></i>Generate Report</button>
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'start_date' => $start_date,
+            'end_date' => $end_date
+        ]);
+        
+        return $stmt->fetchAll();
+    }
+    
+    // User productivity report
+    public function getUserProductivity($start_date, $end_date) {
+        $sql = "SELECT u.name, COUNT(le.id) as entries_count,
+                       COUNT(CASE WHEN le.condition_after = 'Good' THEN 1 END) as successful_runs
+                FROM users u 
+                LEFT JOIN logbook_entries le ON u.id = le.user_id 
+                WHERE le.start_date BETWEEN :start_date AND :end_date
+                GROUP BY u.id, u.name
+                ORDER BY entries_count DESC";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'start_date' => $start_date,
+            'end_date' => $end_date
+        ]);
+        
+        return $stmt->fetchAll();
+    }
+    
+    // Equipment maintenance alerts
+    public function getMaintenanceAlerts() {
+        $sql = "SELECT i.name, i.code,
+                       COUNT(CASE WHEN le.condition_after = 'Need Maintenance' THEN 1 END) as maintenance_needed,
+                       COUNT(CASE WHEN le.condition_after = 'Broken' THEN 1 END) as broken_count,
+                       MAX(le.start_date) as last_used
+                FROM instruments i 
+                LEFT JOIN logbook_entries le ON i.id = le.instrument_id 
+                GROUP BY i.id, i.name, i.code
+                HAVING maintenance_needed > 0 OR broken_count > 0 OR last_used < DATE_SUB(NOW(), INTERVAL 30 DAY)
+                ORDER BY broken_count DESC, maintenance_needed DESC";
+        
+        return $this->pdo->query($sql)->fetchAll();
+    }
+}
+
+$reporting = new LogbookReporting($pdo);
+
+// Get date range from request or default to last 30 days
+$end_date = $_GET['end_date'] ?? date('Y-m-d');
+$start_date = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
+
+$instrument_usage = $reporting->getInstrumentUsage($start_date, $end_date);
+$user_productivity = $reporting->getUserProductivity($start_date, $end_date);
+$maintenance_alerts = $reporting->getMaintenanceAlerts();
+?>
+
+<div class="space-y-6">
+    <!-- Date Range Filter -->
+    <div class="bg-card p-4 rounded-lg border border-border">
+        <form method="GET" class="flex gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-muted-foreground mb-1">Start Date</label>
+                <input type="date" name="start_date" value="<?php echo esc_html($start_date); ?>" 
+                       class="bg-muted border border-border rounded-lg px-3 py-2 text-sm">
             </div>
+            <div>
+                <label class="block text-sm font-medium text-muted-foreground mb-1">End Date</label>
+                <input type="date" name="end_date" value="<?php echo esc_html($end_date); ?>" 
+                       class="bg-muted border border-border rounded-lg px-3 py-2 text-sm">
+            </div>
+            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-primary/90">
+                Generate Report
+            </button>
+        </form>
+    </div>
+
+    <!-- Instrument Usage Report -->
+    <div class="bg-card p-6 rounded-lg border border-border">
+        <h3 class="text-lg font-semibold mb-4">Instrument Usage Statistics</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-muted">
+                    <tr>
+                        <th class="p-3 text-left">Instrument</th>
+                        <th class="p-3 text-right">Usage Count</th>
+                        <th class="p-3 text-right">Avg Duration (hrs)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($instrument_usage as $usage): ?>
+                    <tr class="border-t border-border">
+                        <td class="p-3"><?php echo esc_html($usage['name']); ?></td>
+                        <td class="p-3 text-right"><?php echo (int)$usage['usage_count']; ?></td>
+                        <td class="p-3 text-right"><?php echo number_format($usage['avg_duration_hours'], 1); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <!-- Maintenance Alerts -->
+    <?php if (!empty($maintenance_alerts)): ?>
+    <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+        <h3 class="text-lg font-semibold text-yellow-800 mb-4">🚨 Maintenance Alerts</h3>
+        <div class="space-y-2">
+            <?php foreach ($maintenance_alerts as $alert): ?>
+            <div class="bg-white p-3 rounded border border-yellow-200">
+                <strong><?php echo esc_html($alert['name']); ?></strong> (<?php echo esc_html($alert['code']); ?>)
+                <?php if ($alert['broken_count'] > 0): ?>
+                    <span class="text-red-600 ml-2">⚠️ Reported broken <?php echo (int)$alert['broken_count']; ?> times</span>
+                <?php elseif ($alert['maintenance_needed'] > 0): ?>
+                    <span class="text-orange-600 ml-2">🔧 Needs maintenance (<?php echo (int)$alert['maintenance_needed']; ?> reports)</span>
+                <?php else: ?>
+                    <span class="text-gray-600 ml-2">📅 Not used since <?php echo esc_html($alert['last_used']); ?></span>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
+
 <?php require_once __DIR__ . '/../templates/footer.php'; ?>
