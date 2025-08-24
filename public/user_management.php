@@ -22,11 +22,9 @@ $stmt = $pdo->query("
 $users = $stmt->fetchAll();
 ?>
 
-<!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
 
 <div class="space-y-6">
-    <!-- Page Header -->
     <div class="bg-card p-6 rounded-xl border border-border shadow-lg">
         <div class="flex justify-between items-center">
             <div>
@@ -40,7 +38,6 @@ $users = $stmt->fetchAll();
         </div>
     </div>
 
-    <!-- Users Table -->
     <div class="bg-card p-6 rounded-xl border border-border shadow-lg">
         <div class="overflow-x-auto">
             <table id="usersTable" class="display table-auto w-full text-sm">
@@ -62,44 +59,22 @@ $users = $stmt->fetchAll();
                     <tr>
                         <td class="p-3 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-3">
-                                    <span class="text-white text-xs font-semibold"><?php echo strtoupper(substr($user['name'], 0, 1)); ?></span>
-                                </div>
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-3"><span class="text-white text-xs font-semibold"><?php echo strtoupper(substr($user['name'], 0, 1)); ?></span></div>
                                 <?php echo esc_html($user['name']); ?>
                             </div>
                         </td>
                         <td class="p-3 whitespace-nowrap"><?php echo esc_html($user['username']); ?></td>
                         <td class="p-3 whitespace-nowrap"><?php echo esc_html($user['email'] ?? 'N/A'); ?></td>
-                        <td class="p-3 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full <?php echo $user['role'] === 'admin' ? 'bg-red-100 text-red-800' : ($user['role'] === 'user' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'); ?>">
-                                <?php echo ucfirst(esc_html($user['role'])); ?>
-                            </span>
-                        </td>
-                        <td class="p-3 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full <?php echo $user['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-                                <?php echo $user['is_active'] ? 'Active' : 'Inactive'; ?>
-                            </span>
-                        </td>
+                        <td class="p-3 whitespace-nowrap"><span class="px-2 py-1 text-xs rounded-full <?php echo $user['role'] === 'admin' ? 'bg-red-100 text-red-800' : ($user['role'] === 'user' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'); ?>"><?php echo ucfirst(esc_html($user['role'])); ?></span></td>
+                        <td class="p-3 whitespace-nowrap"><span class="px-2 py-1 text-xs rounded-full <?php echo $user['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>"><?php echo $user['is_active'] ? 'Active' : 'Inactive'; ?></span></td>
                         <td class="p-3 text-center"><?php echo (int)$user['total_entries']; ?></td>
                         <td class="p-3 whitespace-nowrap"><?php echo $user['last_activity'] ? date('M j, Y', strtotime($user['last_activity'])) : 'Never'; ?></td>
                         <td class="p-3 whitespace-nowrap"><?php echo date('M j, Y', strtotime($user['created_at'])); ?></td>
                         <td class="p-3 whitespace-nowrap">
                             <div class="flex gap-2">
-                                <button onclick="editUser(<?php echo $user['id']; ?>)" class="text-blue-600 hover:text-blue-800 p-1" title="Edit">
-                                    <i class="fas fa-edit text-sm"></i>
-                                </button>
-                                <button onclick="toggleUserStatus(<?php echo $user['id']; ?>, <?php echo $user['is_active'] ? 'false' : 'true'; ?>)" 
-                                        class="<?php echo $user['is_active'] ? 'text-red-600 hover:text-red-800' : 'text-green-600 hover:text-green-800'; ?> p-1" 
-                                        title="<?php echo $user['is_active'] ? 'Deactivate' : 'Activate'; ?>">
-                                    <i class="fas fa-<?php echo $user['is_active'] ? 'ban' : 'check'; ?> text-sm"></i>
-                                </button>
-                                <button onclick="resetPassword(<?php echo $user['id']; ?>)" class="text-yellow-600 hover:text-yellow-800 p-1" title="Reset Password">
-                                    <i class="fas fa-key text-sm"></i>
-                                </button>
+                                <button onclick="editUser(<?php echo $user['id']; ?>)" class="text-blue-600 hover:text-blue-800 p-1" title="Edit"><i class="fas fa-edit text-sm"></i></button>
                                 <?php if ($user['id'] !== $_SESSION['user_id']): ?>
-                                <button onclick="deleteUser(<?php echo $user['id']; ?>)" class="text-red-600 hover:text-red-800 p-1" title="Delete">
-                                    <i class="fas fa-trash text-sm"></i>
-                                </button>
+                                <button onclick="deleteUser(<?php echo $user['id']; ?>)" class="text-red-600 hover:text-red-800 p-1" title="Delete"><i class="fas fa-trash text-sm"></i></button>
                                 <?php endif; ?>
                             </div>
                         </td>
@@ -111,202 +86,112 @@ $users = $stmt->fetchAll();
     </div>
 </div>
 
-<!-- Add/Edit User Modal -->
 <div id="userModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
     <div class="bg-card rounded-xl border border-border shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h3 id="userModalTitle" class="text-lg font-semibold text-foreground">Add New User</h3>
-            <button onclick="hideUserModal()" class="text-muted-foreground hover:text-foreground">
-                <i class="fas fa-times w-5 h-5"></i>
-            </button>
-        </div>
-        
+        <div class="flex justify-between items-center mb-6"><h3 id="userModalTitle" class="text-lg font-semibold text-foreground">Add New User</h3><button onclick="hideUserModal()" class="text-muted-foreground hover:text-foreground"><i class="fas fa-times w-5 h-5"></i></button></div>
         <form id="userForm">
             <input type="hidden" name="csrf_token" value="<?php echo esc_html($_SESSION['csrf_token']); ?>">
-            <input type="hidden" name="user_id" value="">
-            
+            <input type="hidden" name="user_id" id="user_id_field" value="">
+            <input type="hidden" name="action" value="create_update">
             <div class="space-y-4">
-                <div>
-                    <label for="user_name" class="block text-sm font-medium text-muted-foreground mb-1">Full Name</label>
-                    <input type="text" id="user_name" name="name" required 
-                           class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-                </div>
-                
-                <div>
-                    <label for="user_username" class="block text-sm font-medium text-muted-foreground mb-1">Username</label>
-                    <input type="text" id="user_username" name="username" required 
-                           class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-                </div>
-                
-                <div>
-                    <label for="user_email" class="block text-sm font-medium text-muted-foreground mb-1">Email</label>
-                    <input type="email" id="user_email" name="email" 
-                           class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-                </div>
-                
-                <div>
-                    <label for="user_role" class="block text-sm font-medium text-muted-foreground mb-1">Role</label>
-                    <select id="user_role" name="role" required 
-                            class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-                        <option value="user">User</option>
-                        <option value="admin">Administrator</option>
-                        <option value="viewer">Viewer</option>
-                    </select>
-                </div>
-                
-                <div id="passwordSection">
-                    <label for="user_password" class="block text-sm font-medium text-muted-foreground mb-1">Password</label>
-                    <input type="password" id="user_password" name="password" 
-                           class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-                    <p class="text-xs text-muted-foreground mt-1">Leave blank when editing to keep current password</p>
-                </div>
-                
-                <div>
-                    <label class="flex items-center">
-                        <input type="checkbox" id="user_active" name="is_active" checked 
-                               class="mr-2 rounded border-border text-primary focus:ring-primary">
-                        <span class="text-sm text-muted-foreground">Account is active</span>
-                    </label>
-                </div>
+                <div><label for="user_name" class="block text-sm font-medium text-muted-foreground mb-1">Full Name</label><input type="text" id="user_name" name="name" required class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"></div>
+                <div><label for="user_username" class="block text-sm font-medium text-muted-foreground mb-1">Username</label><input type="text" id="user_username" name="username" required class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"></div>
+                <div><label for="user_email" class="block text-sm font-medium text-muted-foreground mb-1">Email</label><input type="email" id="user_email" name="email" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"></div>
+                <div><label for="user_role" class="block text-sm font-medium text-muted-foreground mb-1">Role</label><select id="user_role" name="role" required class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"><option value="user">User</option><option value="admin">Administrator</option><option value="viewer">Viewer</option></select></div>
+                <div id="passwordSection"><label for="user_password" class="block text-sm font-medium text-muted-foreground mb-1">Password</label><input type="password" id="user_password" name="password" class="w-full bg-muted border border-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"><p class="text-xs text-muted-foreground mt-1">Leave blank when editing to keep current password</p></div>
+                <div><label class="flex items-center"><input type="checkbox" id="user_active" name="is_active" checked class="mr-2 rounded border-border text-primary focus:ring-primary"><span class="text-sm text-muted-foreground">Account is active</span></label></div>
             </div>
-            
-            <div class="mt-6 flex justify-end space-x-3">
-                <button type="button" onclick="hideUserModal()" class="px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-accent transition-colors">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Save User
-                </button>
-            </div>
+            <div class="mt-6 flex justify-end space-x-3"><button type="button" onclick="hideUserModal()" class="px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-accent transition-colors">Cancel</button><button type="submit" class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Save User</button></div>
         </form>
     </div>
 </div>
 
-<!-- Confirmation Modal -->
-<div id="confirmModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
-    <div class="bg-card rounded-xl border border-border shadow-xl p-6 w-full max-w-md">
-        <div class="flex items-center mb-4">
-            <div id="confirmIcon" class="p-2 rounded-full mr-3">
-                <i class="fas fa-question-circle text-lg"></i>
-            </div>
-            <h3 id="confirmTitle" class="text-lg font-semibold text-foreground">Confirm Action</h3>
-        </div>
-        <p id="confirmMessage" class="text-muted-foreground mb-6">Are you sure you want to perform this action?</p>
-        <div class="flex justify-end gap-3">
-            <button type="button" onclick="hideConfirmModal()" class="px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-accent transition-colors">
-                Cancel
-            </button>
-            <button type="button" id="confirmButton" onclick="executeConfirmedAction()" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors">
-                Confirm
-            </button>
-        </div>
-    </div>
-</div>
+<div id="confirmModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4"><div class="bg-card rounded-xl border border-border shadow-xl p-6 w-full max-w-md"><div class="flex items-center mb-4"><div id="confirmIcon" class="p-2 rounded-full mr-3"><i class="fas fa-question-circle text-lg"></i></div><h3 id="confirmTitle" class="text-lg font-semibold text-foreground">Confirm Action</h3></div><p id="confirmMessage" class="text-muted-foreground mb-6">Are you sure?</p><div class="flex justify-end gap-3"><button type="button" onclick="hideConfirmModal()" class="px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-accent transition-colors">Cancel</button><button type="button" id="confirmButton" onclick="executeConfirmedAction()" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors">Confirm</button></div></div></div>
 
-<!-- jQuery and DataTables -->
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.min.js"></script>
 
 <script>
 $(document).ready(function() {
-    $('#usersTable').DataTable({
-        "pageLength": 10,
-        "order": [[7, "desc"]], // Order by created date
-        "columnDefs": [
-            { "orderable": false, "targets": [8] } // Actions column not sortable
-        ]
-    });
+    $('#usersTable').DataTable({ "pageLength": 10, "order": [[7, "desc"]], "columnDefs": [{ "orderable": false, "targets": [8] }] });
 });
 
-// Modal management
+// --- UPDATED JAVASCRIPT ---
 function showAddUserModal() {
-    document.getElementById('userModalTitle').textContent = 'Add New User';
-    document.getElementById('userForm').reset();
-    document.getElementById('userForm').elements['user_id'].value = '';
-    document.getElementById('passwordSection').style.display = 'block';
-    document.getElementById('user_password').required = true;
-    document.getElementById('userModal').classList.remove('hidden');
-    document.getElementById('userModal').classList.add('flex');
+    $('#userModalTitle').text('Add New User');
+    $('#userForm')[0].reset();
+    $('#user_id_field').val('');
+    $('#user_password').prop('required', true);
+    $('#userModal').removeClass('hidden').addClass('flex');
 }
 
 function hideUserModal() {
-    document.getElementById('userModal').classList.add('hidden');
-    document.getElementById('userModal').classList.remove('flex');
+    $('#userModal').addClass('hidden').removeClass('flex');
 }
 
 function editUser(userId) {
-    // Fetch user data and populate modal
     fetch(`get_user_data.php?id=${userId}`)
         .then(response => response.json())
         .then(user => {
-            document.getElementById('userModalTitle').textContent = 'Edit User';
-            document.getElementById('userForm').elements['user_id'].value = user.id;
-            document.getElementById('user_name').value = user.name;
-            document.getElementById('user_username').value = user.username;
-            document.getElementById('user_email').value = user.email || '';
-            document.getElementById('user_role').value = user.role;
-            document.getElementById('user_active').checked = user.is_active == 1;
-            document.getElementById('passwordSection').style.display = 'block';
-            document.getElementById('user_password').required = false;
-            document.getElementById('userModal').classList.remove('hidden');
-            document.getElementById('userModal').classList.add('flex');
+            $('#userModalTitle').text('Edit User');
+            $('#user_id_field').val(user.id);
+            $('#user_name').val(user.name);
+            $('#user_username').val(user.username);
+            $('#user_email').val(user.email || '');
+            $('#user_role').val(user.role);
+            $('#user_active').prop('checked', user.is_active == 1);
+            $('#user_password').val('').prop('required', false);
+            $('#userModal').removeClass('hidden').addClass('flex');
         });
 }
 
-// Confirmation modal
+$('#userForm').on('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('user_actions.php', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert(result.message);
+                location.reload();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        });
+});
+
 let pendingAction = null;
-
-function showConfirmModal(title, message, action, buttonText, buttonClass) {
-    document.getElementById('confirmTitle').textContent = title;
-    document.getElementById('confirmMessage').textContent = message;
-    document.getElementById('confirmButton').textContent = buttonText;
-    document.getElementById('confirmButton').className = `px-4 py-2 text-sm font-medium rounded-lg transition-colors ${buttonClass}`;
+function showConfirmModal(title, message, action, btnClass) {
+    $('#confirmTitle').text(title);
+    $('#confirmMessage').text(message);
+    $('#confirmButton').attr('class', `px-4 py-2 text-sm font-medium rounded-lg transition-colors ${btnClass}`);
     pendingAction = action;
-    document.getElementById('confirmModal').classList.remove('hidden');
-    document.getElementById('confirmModal').classList.add('flex');
+    $('#confirmModal').removeClass('hidden').addClass('flex');
 }
-
 function hideConfirmModal() {
-    document.getElementById('confirmModal').classList.add('hidden');
-    document.getElementById('confirmModal').classList.remove('flex');
-    pendingAction = null;
+    $('#confirmModal').addClass('hidden').removeClass('flex');
 }
-
 function executeConfirmedAction() {
-    if (pendingAction) {
-        pendingAction();
-    }
+    if (pendingAction) pendingAction();
     hideConfirmModal();
 }
 
-function toggleUserStatus(userId, newStatus) {
-    const action = newStatus === 'true' ? 'activate' : 'deactivate';
-    const actionText = newStatus === 'true' ? 'Activate' : 'Deactivate';
-    
-    showConfirmModal(
-        `${actionText} User`,
-        `Are you sure you want to ${action} this user account?`,
-        () => executeUserAction('toggle_status', userId, {status: newStatus}),
-        actionText,
-        newStatus === 'true' ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-red-600 text-white hover:bg-red-700'
-    );
-}
-
-function resetPassword(userId) {
-    showConfirmModal(
-        'Reset Password',
-        'Are you sure you want to reset this user\'s password? A new temporary password will be generated.',
-        () => executeUserAction('reset_password', userId),
-        'Reset',
-        'bg-yellow-600 text-white hover:bg-yellow-700'
-    );
-}
-
 function deleteUser(userId) {
-    showConfirmModal(
-        'Delete User',
-        'Are you sure you want to delete this user? This action cannot be undone.',
-        () => executeUserAction('delete', userId),
-        'Delete',
-        'bg-red-600 text-white hov
+    const action = () => {
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('user_id', userId);
+        formData.append('csrf_token', '<?php echo esc_html($_SESSION['csrf_token']); ?>');
+        fetch('user_actions.php', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(result => {
+                alert(result.message);
+                if(result.success) location.reload();
+            });
+    };
+    showConfirmModal('Delete User', 'Are you sure you want to delete this user? This cannot be undone.', action, 'bg-red-600 text-white hover:bg-red-700');
+}
+</script>
+
+<?php require_once __DIR__ . '/../templates/footer.php'; ?>

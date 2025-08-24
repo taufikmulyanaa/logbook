@@ -1,1 +1,36 @@
 [2025-08-24 07:24:49] - New logbook entry created (ID: 4) by user ID: 1
+[2025-08-24 08:01:54] - New logbook entry created (ID: 5) by user ID: 1
+[24-Aug-2025 08:06:34 Europe/Berlin] PHP Deprecated:  number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\logbook\public\reporting.php on line 117
+[2025-08-24 08:08:46] - New logbook entry created (ID: 6) by user ID: 1
+[24-Aug-2025 08:09:06 Europe/Berlin] PHP Deprecated:  number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\logbook\public\reporting.php on line 117
+[24-Aug-2025 08:09:06 Europe/Berlin] PHP Deprecated:  number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\logbook\public\reporting.php on line 117
+[2025-08-24 08:24:58] - Error updating entry: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'field list'
+[2025-08-24 08:26:47] - Error updating entry: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'field list'
+[2025-08-24 08:27:53] - Entry updated (ID: 6) by user ID: 1
+[24-Aug-2025 08:30:16 Europe/Berlin] PHP Deprecated:  number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\logbook\public\reporting.php on line 117
+[2025-08-24 08:35:36] - Entry updated (ID: 5) by user ID: 1
+[2025-08-24 08:39:11] - User logged out: Administrator
+[2025-08-24 08:40:06] - Matrix updated for instrument ID 9. Parameter 'MobilePhase' set to true
+[2025-08-24 08:40:07] - Matrix updated for instrument ID 9. Parameter 'MobilePhase' set to false
+[24-Aug-2025 08:50:44 Europe/Berlin] PHP Deprecated:  number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\logbook\public\reporting.php on line 117
+[24-Aug-2025 08:53:00 Europe/Berlin] PHP Deprecated:  number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\logbook\public\reporting.php on line 117
+[2025-08-24 08:59:25] - Matrix updated for instrument ID 9. Parameter 'MobilePhase' set to true
+[2025-08-24 08:59:26] - Matrix updated for instrument ID 9. Parameter 'Speed' set to true
+[2025-08-24 08:59:51] - Matrix updated for instrument ID 9. Parameter 'MobilePhase' set to false
+[2025-08-24 08:59:51] - Matrix updated for instrument ID 9. Parameter 'Speed' set to false
+[2025-08-24 08:59:54] - Matrix updated for instrument ID 26. Parameter 'MobilePhase' set to true
+[2025-08-24 08:59:55] - Matrix updated for instrument ID 26. Parameter 'Speed' set to true
+[2025-08-24 08:59:56] - Matrix updated for instrument ID 26. Parameter 'ElectrodeType' set to true
+[2025-08-24 09:00:22] - Matrix updated for instrument ID 26. Parameter 'ElectrodeType' set to false
+[2025-08-24 09:00:23] - Matrix updated for instrument ID 26. Parameter 'Speed' set to false
+[2025-08-24 09:00:23] - Matrix updated for instrument ID 26. Parameter 'MobilePhase' set to false
+[2025-08-24 09:00:30] - Matrix updated for instrument ID 9. Parameter 'MobilePhase' set to true
+[2025-08-24 09:00:31] - Matrix updated for instrument ID 9. Parameter 'Speed' set to true
+[2025-08-24 09:00:31] - Matrix updated for instrument ID 9. Parameter 'ElectrodeType' set to true
+[2025-08-24 09:00:32] - Matrix updated for instrument ID 9. Parameter 'Result' set to true
+[2025-08-24 09:00:44] - Matrix updated for instrument ID 9. Parameter 'Result' set to false
+[2025-08-24 09:00:44] - Matrix updated for instrument ID 9. Parameter 'ElectrodeType' set to false
+[2025-08-24 09:00:45] - Matrix updated for instrument ID 9. Parameter 'Speed' set to false
+[2025-08-24 09:00:46] - Matrix updated for instrument ID 9. Parameter 'MobilePhase' set to false
+[24-Aug-2025 09:01:13 Europe/Berlin] PHP Deprecated:  number_format(): Passing null to parameter #1 ($num) of type float is deprecated in C:\xampp\htdocs\logbook\public\reporting.php on line 117
+[2025-08-24 09:10:37] - 0 rows imported from CSV by user ID: 1

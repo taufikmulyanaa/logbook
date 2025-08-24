@@ -79,44 +79,42 @@ $user_productivity = $reporting->getUserProductivity($start_date, $end_date);
 $maintenance_alerts = $reporting->getMaintenanceAlerts();
 ?>
 
-<div class="space-y-6">
-    <!-- Date Range Filter -->
+<div class="space-y-4">
     <div class="bg-card p-4 rounded-lg border border-border">
-        <form method="GET" class="flex gap-4 items-end">
+        <form method="GET" class="flex flex-wrap gap-3 items-end">
             <div>
-                <label class="block text-sm font-medium text-muted-foreground mb-1">Start Date</label>
+                <label class="block text-xs font-medium text-muted-foreground mb-1">Start Date</label>
                 <input type="date" name="start_date" value="<?php echo esc_html($start_date); ?>" 
-                       class="bg-muted border border-border rounded-lg px-3 py-2 text-sm">
+                       class="bg-muted border border-border rounded-md px-3 py-1.5 text-xs">
             </div>
             <div>
-                <label class="block text-sm font-medium text-muted-foreground mb-1">End Date</label>
+                <label class="block text-xs font-medium text-muted-foreground mb-1">End Date</label>
                 <input type="date" name="end_date" value="<?php echo esc_html($end_date); ?>" 
-                       class="bg-muted border border-border rounded-lg px-3 py-2 text-sm">
+                       class="bg-muted border border-border rounded-md px-3 py-1.5 text-xs">
             </div>
-            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-primary/90">
+            <button type="submit" class="bg-primary text-white px-3 py-1.5 rounded-md text-xs hover:bg-primary/90">
                 Generate Report
             </button>
         </form>
     </div>
 
-    <!-- Instrument Usage Report -->
-    <div class="bg-card p-6 rounded-lg border border-border">
-        <h3 class="text-lg font-semibold mb-4">Instrument Usage Statistics</h3>
+    <div class="bg-card p-4 rounded-lg border border-border">
+        <h3 class="text-base font-semibold mb-3">Instrument Usage Statistics</h3>
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-xs">
                 <thead class="bg-muted">
                     <tr>
-                        <th class="p-3 text-left">Instrument</th>
-                        <th class="p-3 text-right">Usage Count</th>
-                        <th class="p-3 text-right">Avg Duration (hrs)</th>
+                        <th class="p-2 text-left">Instrument</th>
+                        <th class="p-2 text-right">Usage Count</th>
+                        <th class="p-2 text-right">Avg Duration (hrs)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($instrument_usage as $usage): ?>
                     <tr class="border-t border-border">
-                        <td class="p-3"><?php echo esc_html($usage['name']); ?></td>
-                        <td class="p-3 text-right"><?php echo (int)$usage['usage_count']; ?></td>
-                        <td class="p-3 text-right"><?php echo number_format($usage['avg_duration_hours'], 1); ?></td>
+                        <td class="p-2"><?php echo esc_html($usage['name']); ?></td>
+                        <td class="p-2 text-right"><?php echo (int)$usage['usage_count']; ?></td>
+                        <td class="p-2 text-right"><?php echo number_format($usage['avg_duration_hours'] ?? 0, 1); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -124,13 +122,12 @@ $maintenance_alerts = $reporting->getMaintenanceAlerts();
         </div>
     </div>
 
-    <!-- Maintenance Alerts -->
     <?php if (!empty($maintenance_alerts)): ?>
-    <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-        <h3 class="text-lg font-semibold text-yellow-800 mb-4">🚨 Maintenance Alerts</h3>
-        <div class="space-y-2">
+    <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+        <h3 class="text-base font-semibold text-yellow-800 mb-3">🚨 Maintenance Alerts</h3>
+        <div class="space-y-2 text-xs">
             <?php foreach ($maintenance_alerts as $alert): ?>
-            <div class="bg-white p-3 rounded border border-yellow-200">
+            <div class="bg-white p-2 rounded border border-yellow-200">
                 <strong><?php echo esc_html($alert['name']); ?></strong> (<?php echo esc_html($alert['code']); ?>)
                 <?php if ($alert['broken_count'] > 0): ?>
                     <span class="text-red-600 ml-2">⚠️ Reported broken <?php echo (int)$alert['broken_count']; ?> times</span>

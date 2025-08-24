@@ -19,6 +19,7 @@ $finish_date = !empty($_POST['finish_date']) ? trim($_POST['finish_date']) : nul
 $finish_time = !empty($_POST['finish_time']) ? trim($_POST['finish_time']) : null;
 $condition_after = trim($_POST['condition_after'] ?? null);
 $remark = trim($_POST['remark'] ?? null);
+$status = trim($_POST['status'] ?? 'Not Complete'); // Get the new status value
 $params = $_POST['params'] ?? [];
 
 // Basic validation
@@ -40,6 +41,7 @@ $data = [
     'finish_time' => $finish_time,
     'condition_after' => $condition_after,
     'remark' => $remark,
+    'status' => $status, // Add status to the data array
 ];
 
 // Whitelist and sanitize dynamic parameters
@@ -48,15 +50,12 @@ $parameter_columns = [
     'Diluent', 'Lamp', 'Column', 'Apparatus', 'Medium', 'TotalVolume', 'VesselQuantity'
 ];
 foreach ($parameter_columns as $param) {
-    // **FIX:** Convert CamelCase parameter name to snake_case to match database column names.
-    // e.g., 'MobilePhase' becomes 'mobile_phase_val'
     $snake_case_param = strtolower(preg_replace('/(?<!^)([A-Z])/', '_$1', $param));
     $db_column_name = $snake_case_param . '_val';
     $data[$db_column_name] = isset($params[$param]) && is_string($params[$param]) ? trim($params[$param]) : null;
 }
 
 // Build SQL statement
-// Wrap all column names in backticks to prevent SQL syntax errors with reserved keywords.
 $columns = "`" . implode("`, `", array_keys($data)) . "`";
 $placeholders = ":" . implode(", :", array_keys($data));
 $sql = "INSERT INTO logbook_entries ($columns) VALUES ($placeholders)";
@@ -66,8 +65,7 @@ try {
     $stmt->execute($data);
     log_activity("New logbook entry created (ID: {$pdo->lastInsertId()}) by user ID: {$user_id}");
 } catch (PDOException $e) {
-    log_activity("Error creating logbook entry: " . $e->getMessage());
-    // Provide a more detailed error message for debugging
+    log_activity("Error creating logbook entry: " . $e.getMessage());
     die("Gagal menyimpan data. Error: " . $e->getMessage());
 }
 
